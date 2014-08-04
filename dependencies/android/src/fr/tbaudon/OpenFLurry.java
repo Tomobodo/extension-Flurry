@@ -1,5 +1,12 @@
-package org.haxe.extension;
+package fr.tbaudon;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.haxe.extension.Extension;
+
+import com.flurry.android.FlurryAgent;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
@@ -7,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
 
@@ -38,13 +46,35 @@ import android.view.View;
 */
 public class OpenFLurry extends Extension {
 	
+	static private String apiKey;
 	
-	public static int sampleMethod (int inputValue) {
-		
-		return inputValue * 100;
-		
+	
+	public static void init(String apiKey){
+		OpenFLurry.apiKey = apiKey;
+		FlurryAgent.onStartSession(mainContext, OpenFLurry.apiKey);
+		Log.i("trace", "Flurry session started : " + OpenFLurry.apiKey);
 	}
 	
+	public static void logEvent(String eventName, String keys, String values, boolean trackTime){
+		Map<String, String> eventParams = new HashMap<String, String>();
+		String[] keyArray = keys.split(";");
+		String[] valueArray = values.split(";");
+		
+		for(int i = 0; i < keyArray.length; ++i)
+			eventParams.put(keyArray[i], valueArray[i]);
+		
+		if(keys.length() == 0){
+			FlurryAgent.logEvent(eventName, trackTime);
+		}
+		else
+			FlurryAgent.logEvent(eventName, eventParams, trackTime);
+		
+		Log.i("trace", "Flurry event logged : " + eventName);
+	}
+	
+	public static void endTimedEvent(String eventName){
+		FlurryAgent.endTimedEvent(eventName);
+	}
 	
 	/**
 	 * Called when an activity you launched exits, giving you the requestCode 
@@ -52,9 +82,7 @@ public class OpenFLurry extends Extension {
 	 * from it.
 	 */
 	public boolean onActivityResult (int requestCode, int resultCode, Intent data) {
-		
 		return true;
-		
 	}
 	
 	
@@ -62,9 +90,6 @@ public class OpenFLurry extends Extension {
 	 * Called when the activity is starting.
 	 */
 	public void onCreate (Bundle savedInstanceState) {
-		
-		
-		
 	}
 	
 	
@@ -72,9 +97,8 @@ public class OpenFLurry extends Extension {
 	 * Perform any final cleanup before an activity is destroyed.
 	 */
 	public void onDestroy () {
-		
-		
-		
+		FlurryAgent.onEndSession(mainContext);
+		Log.i("trace", "Flurry session ended : " + OpenFLurry.apiKey);
 	}
 	
 	
@@ -83,9 +107,6 @@ public class OpenFLurry extends Extension {
 	 * the background, but has not (yet) been killed.
 	 */
 	public void onPause () {
-		
-		
-		
 	}
 	
 	
@@ -94,9 +115,6 @@ public class OpenFLurry extends Extension {
 	 * re-displayed to the user (the user has navigated back to it).
 	 */
 	public void onRestart () {
-		
-		
-		
 	}
 	
 	
@@ -105,9 +123,6 @@ public class OpenFLurry extends Extension {
 	 * to start interacting with the user.
 	 */
 	public void onResume () {
-		
-		
-		
 	}
 	
 	
@@ -117,9 +132,6 @@ public class OpenFLurry extends Extension {
 	 * user.
 	 */
 	public void onStart () {
-		
-		
-		
 	}
 	
 	
@@ -128,9 +140,6 @@ public class OpenFLurry extends Extension {
 	 * another activity has been resumed and is covering this one. 
 	 */
 	public void onStop () {
-		
-		
-		
 	}
 	
 	

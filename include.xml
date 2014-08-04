@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<ndll name="openflurry" />
+	<ndll name="openflurry" if="ios" />
 	
 	<!-- Use the following for an Android Java extension, not needed otherwise -->
 	
 	<dependency name="openflurry" path="dependencies/android" if="android" />
-	<android extension="org.haxe.extension.OpenFLurry" />
+	<android extension="fr.tbaudon.OpenFLurry" />
+	<android permission="android.permission.INTERNET" />
+	<android permission="android.permission.ACCESS_NETWORK_STATE" />
 	
 </project>
