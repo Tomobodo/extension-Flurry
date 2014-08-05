@@ -32,14 +32,14 @@ class OpenFLurry {
 		var values : String = "";
 		
 		if (params != null) {
-			
-			for (key in params) {
+			for (key in params.keys()) {
 				keys += key + ';';
 				values += params[key] + ";";
 			}
 			
 			keys = keys.substr(0, keys.length - 1);
 			values = values.substr(0, values.length - 1);
+			trace(keys, values);
 		}	
 			
 		logEvent_jni(eventName, keys, values, timed);
