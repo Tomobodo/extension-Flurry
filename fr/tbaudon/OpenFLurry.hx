@@ -19,12 +19,13 @@ class OpenFLurry {
 	 * Sample : (Ljava/lang/String;I)Z = function(String, Int) : bool
 	 */
 	// STATIC METHOD
-	private static var startSession_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "init", "(Ljava/lang/String;)V");
+	private static var startSession_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "init", "(Ljava/lang/String;Z)V");
 	private static var logEvent_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "logEvent", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
-	private static var endTimedEvent_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "endTimedEvent", "(Ljava/lang/String;)V");
+	private static var endTimedEvent_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "endTimedEvent", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+	private static var onPageView_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "logPage", "()V");
 	
-	public static function initSession(apiKey : String) {
-		startSession_jni(apiKey);
+	public static function initSession(apiKey : String, verbose : Bool = false) {
+		startSession_jni(apiKey,verbose);
 	}
 	
 	public static function logEvent(eventName : String, params : Map<String, String> = null, timed : Bool = false) {
@@ -32,20 +33,43 @@ class OpenFLurry {
 		var values : String = "";
 		
 		if (params != null) {
-			for (key in params.keys()) {
-				keys += key + ';';
-				values += params[key] + ";";
-			}
-			
-			keys = keys.substr(0, keys.length - 1);
-			values = values.substr(0, values.length - 1);
-			trace(keys, values);
+			var serializedMap = serializeMap(params);
+			keys = serializedMap.keys;
+			values = serializedMap.values;
 		}	
 			
 		logEvent_jni(eventName, keys, values, timed);
 	}
 	
-	public static function endTimedEvent(eventName :String) {
-		endTimedEvent_jni(eventName);
+	public static function endTimedEvent(eventName :String, params : Map<String, String> = null) {
+		var keys : String = "";
+		var values : String = "";
+		
+		if (params != null) {
+			var serializedMap = serializeMap(params);
+			keys = serializedMap.keys;
+			values = serializedMap.values;
+		}	
+		
+		endTimedEvent_jni(eventName, keys, values);
+	}
+	
+	static public function onPageView() {
+		onPageView_jni();
+	}
+	
+	static function serializeMap(map : Map<String, String>) : {keys : String, values : String}{
+		var k : String = "";
+		var v : String = "";
+		
+		for (key in map.keys()) {
+			k += key + ';';
+			v += map[key] + ';';
+		}
+		
+		k = k.substr(0, k.length - 1);
+		v = v.substr(0, v.length - 1);
+		
+		return { keys : k, values : v };
 	}
 }

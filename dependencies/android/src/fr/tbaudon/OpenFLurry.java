@@ -47,12 +47,14 @@ import android.view.View;
 public class OpenFLurry extends Extension {
 	
 	static private String apiKey;
+	static private boolean verbose;
 	
 	
-	public static void init(String apiKey){
+	public static void init(String apiKey, boolean verbose){
 		OpenFLurry.apiKey = apiKey;
+		OpenFLurry.verbose = verbose;
 		FlurryAgent.onStartSession(mainContext, OpenFLurry.apiKey);
-		Log.i("trace", "Flurry session started : " + OpenFLurry.apiKey);
+		trace("session started : " + OpenFLurry.apiKey);
 	}
 	
 	public static void logEvent(String eventName, String keys, String values, boolean trackTime){
@@ -65,15 +67,42 @@ public class OpenFLurry extends Extension {
 		
 		if(keys.length() == 0){
 			FlurryAgent.logEvent(eventName, trackTime);
+			trace("event logged : " + eventName);
 		}
-		else
+		else{
 			FlurryAgent.logEvent(eventName, eventParams, trackTime);
-		
-		Log.i("trace", "Flurry event logged : " + eventName);
+			trace("event logged : " + eventName + " : " + eventParams);
+		}
 	}
 	
-	public static void endTimedEvent(String eventName){
+	public static void endTimedEvent(String eventName, String keys, String values){
+		Map<String, String> eventParams = new HashMap<String, String>();
+		String[] keyArray = keys.split(";");
+		String[] valueArray = values.split(";");
+		
+		for(int i = 0; i < keyArray.length; ++i)
+			eventParams.put(keyArray[i], valueArray[i]);
+		
+		if(keys.length() == 0){
+			FlurryAgent.endTimedEvent(eventName);
+			trace("timed event ended : " + eventName);
+		}
+		else{
+			FlurryAgent.endTimedEvent(eventName, eventParams);
+			trace("timed event ended : " + eventName + " : " + eventParams);
+		}
+		
 		FlurryAgent.endTimedEvent(eventName);
+	}
+	
+	public static void logPage(){
+		FlurryAgent.onPageView();
+		trace("onPageView");
+	}
+	
+	private static void trace(String message){
+		if(OpenFLurry.verbose)
+			Log.i("trace", "Flurry : " + message);
 	}
 	
 	/**
@@ -98,7 +127,7 @@ public class OpenFLurry extends Extension {
 	 */
 	public void onDestroy () {
 		FlurryAgent.onEndSession(mainContext);
-		Log.i("trace", "Flurry session ended : " + OpenFLurry.apiKey);
+		trace("session ended : " + OpenFLurry.apiKey);
 	}
 	
 	
