@@ -19,16 +19,21 @@ class OpenFLurry {
 	 * Sample : (Ljava/lang/String;I)Z = function(String, Int) : bool
 	 */
 	// STATIC METHOD
+	#if android
 	private static var startSession_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "init", "(Ljava/lang/String;Z)V");
 	private static var logEvent_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "logEvent", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
 	private static var endTimedEvent_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "endTimedEvent", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 	private static var onPageView_jni = JNI.createStaticMethod("fr.tbaudon.OpenFLurry", "logPage", "()V");
+	#end
 	
 	public static function initSession(apiKey : String, verbose : Bool = false) {
-		startSession_jni(apiKey,verbose);
+		#if android
+		startSession_jni(apiKey, verbose);
+		#end
 	}
 	
 	public static function logEvent(eventName : String, params : Map<String, String> = null, timed : Bool = false) {
+		#if android
 		var keys : String = "";
 		var values : String = "";
 		
@@ -39,9 +44,11 @@ class OpenFLurry {
 		}	
 			
 		logEvent_jni(eventName, keys, values, timed);
+		#end
 	}
 	
 	public static function endTimedEvent(eventName :String, params : Map<String, String> = null) {
+		#if android
 		var keys : String = "";
 		var values : String = "";
 		
@@ -52,13 +59,16 @@ class OpenFLurry {
 		}	
 		
 		endTimedEvent_jni(eventName, keys, values);
+		#end
 	}
 	
 	static public function onPageView() {
+		#if android
 		onPageView_jni();
+		#end
 	}
 	
-	static function serializeMap(map : Map<String, String>) : {keys : String, values : String}{
+	static function serializeMap(map : Map<String, String>) : { keys : String, values : String } {
 		var k : String = "";
 		var v : String = "";
 		
