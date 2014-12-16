@@ -2,6 +2,7 @@
 <project>
 	
 	<ndll name="openflurry" if="ios" />
+    <dependency name="Flurry" path="dependencies/ios/libFlurry_5.4.0.a" />
 	
 	<!-- Use the following for an Android Java extension, not needed otherwise -->
 	

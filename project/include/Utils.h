@@ -5,9 +5,13 @@
 namespace openflurry {
 	
 	
-	int SampleMethod(int inputValue);
+	void init(const char * apiKey, bool verbose);
 	
-	
+	void logEvent(const char * name, const char * keys, const char * values, bool timed);
+
+	void endTimedEvent(const char * name, const char * keys, const char * values);
+
+	void onPageView();
 }
 
 
