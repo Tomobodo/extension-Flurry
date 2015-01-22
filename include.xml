@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<ndll name="openflurry" if="ios" />
-    <dependency name="Flurry" path="dependencies/ios/libFlurry_5.4.0.a" />
-	
+    <section if="ios" >
+        <ndll name="openflurry"/>
+        <dependency name="dependencies/ios/libFlurry_5.4.0.a" />
+        <dependency name="Security.framework"/>
+        <dependency name="AdSupport.framework" />
+    </section>
 	<!-- Use the following for an Android Java extension, not needed otherwise -->
 	
 	<dependency name="openflurry" path="dependencies/android" if="android" />
